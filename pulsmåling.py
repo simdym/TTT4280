@@ -28,8 +28,8 @@ def detrendMeasurementMatrix(matrix):
     """
     Detrends vectors in measurement matrix
 
-    :param matrix:
-    :return:
+    :param matrix: measurement matrix
+    :return: detrended matrix
     """
     res_matrix = []
     for vec in matrix:
