@@ -7,7 +7,7 @@ def getMeasurementMatrix(fileName):
     """
     Gets measurement vetors in matrix form: [R-vec, G-vec, B-vec]
 
-    :param filename: csv-file with data
+    :param fileName: csv-file with data
     :return: measurement matrix
     """
     dataRed = []
@@ -46,7 +46,7 @@ def filterMeasurementMatrix(matrix, N, W_n, filter_type, fs=40):
     :param filter_type: type of filter(‘lowpass’, ‘highpass’, ‘bandpass’, ‘bandstop’)
     :param W_n: critical frequencies, scalar for low/high-pass, len-2 vec for bandpass/-stop 
     :param fs: sampling frequency(def = 40)
-    :return: matrix with filtered vectors
+    :return: filtered matrix
     """
     filter = signal.butter(N=N, Wn=W_n, btype=filter_type, output="sos", fs=fs)
     res_matrix = []
@@ -76,8 +76,8 @@ def getPulses(matrices):
     """
     Returns estimated pulse for all channels and matrices in matrix vector
 
-    :param matrices:
-    :return: pulse matrix with estimated pulse o
+    :param matrices: vector of measurement matricies
+    :return: vector of pulse vectors with estimated pulses for all channels
     """
     res_matrix = []
     for matrix in matrices:
@@ -86,6 +86,12 @@ def getPulses(matrices):
 
 
 def getMeanForAllChannels(pulse_matrix):
+    """
+    Gets mean of all channels for for each pulse measurement vector
+
+    :param pulse_matrix: matrix with pulses
+    :return: average for each pulse measurement vector
+    """
     res_vec = []
     for i in range(len(pulse_matrix)):
         res_vec.append(np.mean(pulse_matrix[i]))
@@ -93,6 +99,13 @@ def getMeanForAllChannels(pulse_matrix):
 
 
 def getVarOfChannels(pulse_matrix, real_pulse_vec):
+    """
+    Gets variance for all measurements for each channel
+
+    :param pulse_matrix: matrix with pulses
+    :param real_pulse_vec: vector with real value for pulse
+    :return: vector with variance for each channel
+    """
     res_vec = []
     if (len(pulse_matrix) == len(real_pulse_vec)):
         pulse_matrix = np.transpose(pulse_matrix)
@@ -106,6 +119,14 @@ def getVarOfChannels(pulse_matrix, real_pulse_vec):
 
 
 def getPulseMeasurements(file_vec, detrend=True, filter=True):
+    """
+    Gets pulse measurments from files in file_vec
+
+    :param file_vec: vector with file names
+    :param detrend: detrend setting True=detrend, False=not detrend (default: True)
+    :param detrend: filter setting True=filter, False=no filter (default: True)
+    :return: vector of pulse vectors with estimated pulses for all channels
+    """
     matrices = []
     for file in file_vec:
         matrix = getMeasurementMatrix(file)
@@ -118,6 +139,14 @@ def getPulseMeasurements(file_vec, detrend=True, filter=True):
 
 
 def plotTimeDomainSignals(matrix, fs, labels, colors):
+    """
+    Plots signals in matrix in time-domain
+
+    :param matrix: matrix with signals
+    :param fs: sample frequency
+    :param labels: labels for legend
+    :param colors: colors of signal plots
+    """
     matrix = np.array(matrix)
     if matrix.ndim == 2:
         for vec, l, c in zip(matrix, labels, colors):
@@ -129,10 +158,18 @@ def plotTimeDomainSignals(matrix, fs, labels, colors):
         plt.show()
     else:
         raise Exception("Matrix has wrong dimensions. Should be 2-dimensional, but is:",
-                        matrix.ndim, "dimensions")
+                        matrix.ndim, "dimensional")
 
 
 def plotFrequencyDomainSignals(matrix, fs, labels, colors):
+    """
+    Plots signals in matrix in frequency-domain
+
+    :param matrix: matrix with signals
+    :param fs: sample frequency
+    :param labels: labels for legend
+    :param colors: colors of signal plots
+    """
     matrix = np.array(matrix)
     if matrix.ndim == 2:
         for vec, l, c in zip(matrix, labels, colors):
@@ -144,7 +181,7 @@ def plotFrequencyDomainSignals(matrix, fs, labels, colors):
         plt.show()
     else:
         raise Exception("Matrix has wrong dimensions. Should be 2-dimensional, but is:",
-                        matrix.ndim, "dimensions")
+                        matrix.ndim, "dimensional")
 
 
 def main():
